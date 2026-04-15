@@ -20,32 +20,13 @@ import com.brofurs.brofurs.entity.User;
  */
 public interface UserService extends UserDetailsService {
 
-	/**
-	 * Register a new user with ROLE_USER. Encodes the password and saves to the
-	 * database.
-	 */
 	User registerUser(UserRegistrationDto dto);
 
-	/**
-	 * Find a user by email address. Used by controllers to resolve the currently
-	 * logged-in user from the security principal (UserDetails.getUsername() ==
-	 * email).
-	 */
 	Optional<User> findByEmail(String email);
 
-	/**
-	 * Find a user by their database ID.
-	 */
 	Optional<User> findById(Long id);
 
-	/**
-	 * Return all registered users — used by AdminUserController.
-	 */
 	List<User> findAll();
 
-	/**
-	 * Check whether an email address is already registered. Used during
-	 * registration to prevent duplicate accounts.
-	 */
 	boolean emailExists(String email);
 }
