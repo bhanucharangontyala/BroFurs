@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin :: adminLayout(~{::title}, ~{::main})}">
+<head><title>Order Detail</title></head>
+<body>
+<main>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Order Detail</h2>
+            <p class="text-fc-muted small mb-0">
+                <a th:href="@{/admin/orders}"><i class="bi bi-arrow-left me-1"></i>Back to Orders</a>
+            </p>
+        </div>
+        <span class="status-badge fs-6 px-3 py-2"
+              th:classappend="|status-${order.status.name()}|"
+              th:text="${order.status.displayName}">Status</span>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Order Info -->
+        <div class="col-lg-8">
+            <div class="fc-form-card mb-4">
+                <h5 class="mb-3"><i class="bi bi-receipt me-2 text-fc-brown"></i>
+                    Order <span th:text="${order.orderNumber}">FC-001</span>
+                </h5>
+
+                <div th:each="item : ${order.orderItems}"
+                     class="p-3 rounded mb-3"
+                     style="background:var(--fc-cream);border:1px solid var(--fc-border);">
+                    <div class="row align-items-center g-3">
+                        <div class="col-auto">
+                            <img th:if="${item.product != null and item.product.primaryImage != null}"
+                                 th:src="@{${item.product.primaryImage.imagePath}}"
+                                 style="width:70px;height:70px;object-fit:cover;border-radius:10px;"/>
+                            <div th:unless="${item.product != null and item.product.primaryImage != null}"
+                                 style="width:70px;height:70px;background:var(--fc-sand);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:2rem;">
+                                🪑
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="fw-600 fs-6" th:text="${item.productNameSnapshot}">Product</div>
+                            <div class="text-fc-muted small">
+                                <span th:if="${item.selectedWoodType != null}">
+                                    Wood: <strong th:text="${item.selectedWoodType.name}">Wood</strong> |
+                                </span>
+                                Qty: <strong th:text="${item.quantity}">1</strong>
+                            </div>
+                            <!-- Custom dimensions -->
+                            <div th:if="${item.customLength != null}" class="text-fc-muted small mt-1">
+                                Dimensions:
+                                <strong th:text="${item.customLength}">0</strong> ×
+                                <strong th:text="${item.customWidth}">0</strong> ×
+                                <strong th:text="${item.customHeight}">0</strong>
+                                <span th:text="${item.sizeUnit}">cm</span>
+                            </div>
+                            <div th:if="${item.customizationNotes != null and !#strings.isEmpty(item.customizationNotes)}"
+                                 class="text-fc-muted small mt-1">
+                                Notes: <em th:text="${item.customizationNotes}">—</em>
+                            </div>
+                        </div>
+                        <div class="col-auto fw-600 text-fc-brown fs-5">
+                            ₹<span th:text="${#numbers.formatDecimal(item.unitPrice.multiply(new java.math.BigDecimal(item.quantity)), 0, 'COMMA', 0, 'POINT')}">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-2">
+                    <div class="text-end">
+                        <div class="text-fc-muted small">Total Amount</div>
+                        <div style="font-size:1.8rem;font-family:'Playfair Display',serif;color:var(--fc-brown);">
+                            ₹<span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="fc-form-card" th:if="${order.notes != null and !#strings.isEmpty(order.notes)}">
+                <h6><i class="bi bi-sticky me-2 text-fc-brown"></i>Customer Notes</h6>
+                <p class="text-fc-muted mb-0" th:text="${order.notes}">—</p>
+            </div>
+        </div>
+
+        <!-- Customer Info + Status -->
+        <div class="col-lg-4">
+
+            <!-- Customer -->
+            <div class="fc-form-card mb-3">
+                <h6 class="mb-3"><i class="bi bi-person me-2 text-fc-brown"></i>Customer Details</h6>
+                <table class="table table-sm mb-0" style="font-size:0.9rem;">
+                    <tr><td class="text-fc-muted">Name</td><td th:text="${order.customerName}">—</td></tr>
+                    <tr><td class="text-fc-muted">Phone</td><td th:text="${order.customerPhone ?: '—'}">—</td></tr>
+                    <tr><td class="text-fc-muted">Ordered</td>
+                        <td th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy, hh:mm a')}">—</td></tr>
+                </table>
+            </div>
+
+            <!-- Delivery -->
+            <div class="fc-form-card mb-3" th:if="${order.deliveryAddress != null}">
+                <h6 class="mb-2"><i class="bi bi-geo-alt me-2 text-fc-brown"></i>Delivery Address</h6>
+                <p class="text-fc-muted small mb-0" th:text="${order.deliveryAddress}">—</p>
+            </div>
+
+            <!-- Update Status -->
+            <div class="fc-form-card">
+                <h6 class="mb-3"><i class="bi bi-arrow-repeat me-2 text-fc-brown"></i>Update Status</h6>
+                <form th:action="@{/admin/orders/{id}/status(id=${order.id})}" method="post">
+                    <div class="mb-3">
+                        <select name="status" class="form-select">
+                            <option th:each="s : ${statuses}"
+                                    th:value="${s.name()}"
+                                    th:text="${s.displayName}"
+                                    th:selected="${s == order.status}">Status</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-fc-primary btn w-100">
+                        <i class="bi bi-check-lg me-1"></i>Update Status
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/main :: layout(~{::title}, ~{::main})}">
+<head><title>My Dashboard</title></head>
+<body>
+<main>
+
+<div class="page-banner">
+    <div class="container">
+        <h1><i class="bi bi-speedometer2 me-2"></i>My Dashboard</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-4 page-surface">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="user-dash-card">
+                    <div class="user-dash-card-header">
+                        <i class="bi bi-person-circle me-2"></i>My Profile
+                    </div>
+                    <div class="p-4">
+                        <div class="text-center mb-3">
+                            <div class="profile-avatar">
+                                <i class="bi bi-person-fill text-fc-brown"></i>
+                            </div>
+                        </div>
+                        <table class="table table-sm compact-table">
+                            <tr><td class="text-fc-muted fw-600">Name</td><td th:text="${currentUser.fullName}">-</td></tr>
+                            <tr><td class="text-fc-muted fw-600">Email</td><td th:text="${currentUser.email}">-</td></tr>
+                            <tr><td class="text-fc-muted fw-600">Phone</td><td th:text="${currentUser.phone ?: '-'}">-</td></tr>
+                            <tr><td class="text-fc-muted fw-600">Address</td><td th:text="${currentUser.address ?: '-'}">-</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-brown"><i class="bi bi-bag-check"></i></div>
+                            <div>
+                                <div class="stat-label">My Orders</div>
+                                <div class="stat-value" th:text="${totalOrders}">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="stat-card">
+                            <div class="stat-icon stat-icon-green"><i class="bi bi-calendar-check"></i></div>
+                            <div>
+                                <div class="stat-label">Appointments</div>
+                                <div class="stat-value" th:text="${totalAppointments}">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-sm-4">
+                        <a th:href="@{/products}" class="dashboard-link-card fc-form-card d-block text-center text-decoration-none p-3">
+                            <i class="bi bi-grid fs-2 text-fc-brown"></i>
+                            <div class="mt-2 fw-600">Browse Products</div>
+                        </a>
+                    </div>
+                    <div class="col-sm-4">
+                        <a th:href="@{/user/orders}" class="dashboard-link-card fc-form-card d-block text-center text-decoration-none p-3">
+                            <i class="bi bi-bag fs-2 text-fc-brown"></i>
+                            <div class="mt-2 fw-600">My Orders</div>
+                        </a>
+                    </div>
+                    <div class="col-sm-4">
+                        <a th:href="@{/user/appointments}" class="dashboard-link-card fc-form-card d-block text-center text-decoration-none p-3">
+                            <i class="bi bi-calendar fs-2 text-fc-brown"></i>
+                            <div class="mt-2 fw-600">Appointments</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
+</body>
+</html>

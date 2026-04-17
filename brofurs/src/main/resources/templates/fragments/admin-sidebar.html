@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside th:fragment="adminSidebar" class="admin-sidebar">
+    <a th:href="@{/admin/dashboard}" class="sidebar-brand">
+        <i class="bi bi-house-heart-fill me-2"></i>BroFurs Admin
+    </a>
+
+    <span class="sidebar-section-title">Main</span>
+    <a th:href="@{/admin/dashboard}" class="sidebar-link">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+
+    <span class="sidebar-section-title">Catalogue</span>
+    <a th:href="@{/admin/categories}" class="sidebar-link">
+        <i class="bi bi-grid-3x3-gap"></i> Categories
+    </a>
+    <a th:href="@{/admin/products}" class="sidebar-link">
+        <i class="bi bi-box-seam"></i> Products
+    </a>
+    <a th:href="@{/admin/wood-types}" class="sidebar-link">
+        <i class="bi bi-tree"></i> Wood Types
+    </a>
+
+    <span class="sidebar-section-title">Sales</span>
+    <a th:href="@{/admin/orders}" class="sidebar-link">
+        <i class="bi bi-bag-check"></i> Orders
+    </a>
+    <a th:href="@{/admin/appointments}" class="sidebar-link">
+        <i class="bi bi-calendar-check"></i> Appointments
+    </a>
+
+    <span class="sidebar-section-title">People</span>
+    <a th:href="@{/admin/users}" class="sidebar-link">
+        <i class="bi bi-people"></i> Users
+    </a>
+
+    <span class="sidebar-section-title">Site</span>
+    <a th:href="@{/}" class="sidebar-link">
+        <i class="bi bi-globe"></i> View Site
+    </a>
+    <form th:action="@{/logout}" method="post" class="px-2 mt-1">
+        <button type="submit" class="sidebar-link w-100 text-start border-0 bg-transparent"
+                style="color:rgba(253,200,150,0.75)!important;">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+    </form>
+</aside>
+</body>
+</html>

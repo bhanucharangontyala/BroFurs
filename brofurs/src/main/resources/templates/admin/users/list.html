@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin :: adminLayout(~{::title}, ~{::main})}">
+<head><title>Users</title></head>
+<body>
+<main>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Registered Users</h2>
+            <p class="text-fc-muted small mb-0">All customer accounts on BroFurs</p>
+        </div>
+    </div>
+
+    <div class="admin-table-card">
+        <div class="admin-table-header">
+            <h5><i class="bi bi-people me-2"></i>Users</h5>
+            <span class="badge" style="background:var(--fc-sand);color:var(--fc-brown-dark);"
+                  th:text="${#lists.size(users)} + ' users'">0</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Roles</th>
+                        <th>Enabled</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(users)}">
+                        <td colspan="6" class="text-center text-fc-muted py-4">No users found.</td>
+                    </tr>
+                    <tr th:each="user, stat : ${users}">
+                        <td th:text="${stat.count}">1</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width:34px;height:34px;border-radius:50%;background:var(--fc-sand);display:flex;align-items:center;justify-content:center;font-size:1rem;">
+                                    <i class="bi bi-person-fill text-fc-brown"></i>
+                                </div>
+                                <strong th:text="${user.fullName}">Name</strong>
+                            </div>
+                        </td>
+                        <td th:text="${user.email}">email@example.com</td>
+                        <td th:text="${user.phone ?: '—'}">Phone</td>
+                        <td>
+                            <span th:each="role : ${user.roles}"
+                                  class="badge me-1"
+                                  th:classappend="${role.name == 'ROLE_ADMIN'} ? 'text-bg-dark' : 'badge-in-stock'"
+                                  th:text="${#strings.replace(role.name, 'ROLE_', '')}">ROLE</span>
+                        </td>
+                        <td>
+                            <i th:if="${user.enabled}" class="bi bi-check-circle-fill text-success"></i>
+                            <i th:unless="${user.enabled}" class="bi bi-x-circle-fill text-danger"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

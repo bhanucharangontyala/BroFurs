@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/main :: layout(~{::title}, ~{::main})}">
+<head><title>Login</title></head>
+<body>
+<main>
+
+<section class="py-5 bg-fc-cream auth-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="text-center mb-4">
+                    <div class="auth-hero-icon"><i class="bi bi-door-open-fill"></i></div>
+                    <h2 class="mt-2">Welcome Back</h2>
+                    <p class="text-fc-muted small">Login to continue managing orders, appointments, and saved details.</p>
+                </div>
+
+                <div class="fc-form-card">
+                    <form th:action="@{/login}" method="post" novalidate>
+                        <div th:if="${param.error}" class="alert-fc-error mb-3 d-flex gap-2 align-items-center">
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                            Invalid email or password. Please try again.
+                        </div>
+                        <div th:if="${param.logout}" class="alert-fc-success mb-3 d-flex gap-2 align-items-center">
+                            <i class="bi bi-check-circle-fill"></i>
+                            You have been logged out successfully.
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text input-icon-box">
+                                    <i class="bi bi-envelope text-fc-brown"></i>
+                                </span>
+                                <input type="email" id="email" name="email"
+                                       class="form-control" placeholder="you@email.com"
+                                       required autofocus autocomplete="email"/>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text input-icon-box">
+                                    <i class="bi bi-lock text-fc-brown"></i>
+                                </span>
+                                <input type="password" id="password" name="password"
+                                       class="form-control" placeholder="Enter your password"
+                                       required autocomplete="current-password"/>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-fc-primary btn w-100 py-2">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                        </button>
+                    </form>
+
+                    <hr class="my-4 auth-divider"/>
+                    <p class="text-center text-fc-muted small mb-0">
+                        Don't have an account?
+                        <a th:href="@{/register}" class="text-fc-brown fw-600">Register here</a>
+                    </p>
+                </div>
+
+                <div class="text-center mt-3">
+                    <small class="text-fc-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Admin: <code>admin@furnicraft.com</code> / <code>admin123</code>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
+</body>
+</html>

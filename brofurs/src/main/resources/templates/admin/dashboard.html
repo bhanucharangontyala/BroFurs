@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin :: adminLayout(~{::title}, ~{::main})}">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+<main>
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Dashboard</h2>
+            <p class="text-fc-muted small mb-0">
+                Welcome back! Here's what's happening with your furniture shop today.
+            </p>
+        </div>
+        <a th:href="@{/admin/products/new}" class="btn-fc-primary btn">
+            <i class="bi bi-plus-lg me-1"></i>Add Product
+        </a>
+    </div>
+
+    <!-- ===== STAT CARDS ===== -->
+    <div class="row g-3 mb-4">
+
+        <!-- Total Products -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-brown">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Total Products</div>
+                    <div class="stat-value" th:text="${totalProducts}">0</div>
+                    <div class="mt-1">
+                        <a th:href="@{/admin/products}"
+                           style="font-size:0.75rem;color:var(--fc-brown-light);text-decoration:none;">
+                            Manage products →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Orders -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-gold">
+                    <i class="bi bi-bag-check"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Total Orders</div>
+                    <div class="stat-value" th:text="${totalOrders}">0</div>
+                    <div class="mt-1">
+                        <a th:href="@{/admin/orders}"
+                           style="font-size:0.75rem;color:var(--fc-brown-light);text-decoration:none;">
+                            View all orders →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Orders -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-blue">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Pending Orders</div>
+                    <div class="stat-value" th:text="${pendingOrders}">0</div>
+                    <div class="mt-1">
+                        <span style="font-size:0.75rem;color:var(--fc-text-muted);">
+                            Awaiting confirmation
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Appointments -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon stat-icon-green">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Appointments</div>
+                    <div class="stat-value" th:text="${totalAppointments}">0</div>
+                    <div class="mt-1">
+                        <a th:href="@{/admin/appointments}"
+                           style="font-size:0.75rem;color:var(--fc-brown-light);text-decoration:none;">
+                            Manage appointments →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== QUICK ACTIONS ===== -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="fc-form-card p-3">
+                <h6 class="mb-3 text-fc-muted"
+                    style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;">
+                    Quick Actions
+                </h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <a th:href="@{/admin/products/new}" class="btn btn-sm btn-fc-outline">
+                        <i class="bi bi-plus-circle me-1"></i>New Product
+                    </a>
+                    <a th:href="@{/admin/categories/new}" class="btn btn-sm btn-fc-outline">
+                        <i class="bi bi-grid-plus me-1"></i>New Category
+                    </a>
+                    <a th:href="@{/admin/wood-types/new}" class="btn btn-sm btn-fc-outline">
+                        <i class="bi bi-tree me-1"></i>New Wood Type
+                    </a>
+                    <a th:href="@{/admin/orders}" class="btn btn-sm btn-fc-outline">
+                        <i class="bi bi-bag me-1"></i>View Orders
+                    </a>
+                    <a th:href="@{/admin/appointments}" class="btn btn-sm btn-fc-outline">
+                        <i class="bi bi-calendar-week me-1"></i>View Appointments
+                    </a>
+                    <a th:href="@{/}" target="_blank" class="btn btn-sm btn-fc-outline">
+                        <i class="bi bi-globe me-1"></i>View Live Site
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== RECENT ORDERS TABLE ===== -->
+    <div class="admin-table-card">
+        <div class="admin-table-header">
+            <h5><i class="bi bi-clock-history me-2"></i>Recent Orders</h5>
+            <a th:href="@{/admin/orders}" class="btn btn-sm btn-fc-outline">
+                View All <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <!-- Empty state -->
+        <div th:if="${#lists.isEmpty(recentOrders)}"
+             class="p-5 text-center">
+            <i class="bi bi-inbox fs-1 text-fc-muted"></i>
+            <p class="text-fc-muted mt-3 mb-0">No orders yet. They'll appear here once customers start ordering.</p>
+        </div>
+
+        <!-- Orders table -->
+        <div class="table-responsive" th:unless="${#lists.isEmpty(recentOrders)}">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Product(s)</th>
+                        <th>Wood Type</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="order : ${recentOrders}">
+
+                        <!-- Order Number -->
+                        <td>
+                            <strong class="text-fc-brown" th:text="${order.orderNumber}">FC-001</strong>
+                        </td>
+
+                        <!-- Customer Name -->
+                        <td>
+                            <div th:text="${order.customerName}">Customer</div>
+                            <div class="text-fc-muted" style="font-size:0.75rem;"
+                                 th:if="${order.customerPhone != null}"
+                                 th:text="${order.customerPhone}">Phone</div>
+                        </td>
+
+                        <!-- Product snapshot -->
+                        <td>
+                            <span th:each="item, stat : ${order.orderItems}">
+                                <span th:text="${#strings.abbreviate(item.productNameSnapshot, 28)}">Product</span>
+                                <span th:if="${item.quantity > 1}"
+                                      class="text-fc-muted small"
+                                      th:text="|× ${item.quantity}|"></span>
+                                <span th:unless="${stat.last}" class="text-fc-muted">, </span>
+                            </span>
+                        </td>
+
+                        <!-- Wood type -->
+                        <td>
+                            <span th:each="item, stat : ${order.orderItems}">
+                                <span th:if="${item.selectedWoodType != null}"
+                                      th:text="${item.selectedWoodType.name}">Wood</span>
+                                <span th:unless="${item.selectedWoodType != null}"
+                                      class="text-fc-muted">—</span>
+                            </span>
+                        </td>
+
+                        <!-- Total amount -->
+                        <td>
+                            <span class="fw-600 text-fc-brown">
+                                ₹<span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}">0</span>
+                            </span>
+                        </td>
+
+                        <!-- Order date -->
+                        <td>
+                            <div th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy')}">Date</div>
+                            <div class="text-fc-muted" style="font-size:0.75rem;"
+                                 th:text="${#temporals.format(order.orderDate, 'hh:mm a')}">Time</div>
+                        </td>
+
+                        <!-- Status badge -->
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="|status-${order.status.name()}|"
+                                  th:text="${order.status.displayName}">Status</span>
+                        </td>
+
+                        <!-- Action -->
+                        <td>
+                            <a th:href="@{/admin/orders/{id}(id=${order.id})}"
+                               class="btn btn-sm btn-fc-outline"
+                               data-bs-toggle="tooltip" title="View order details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin :: adminLayout(~{::title}, ~{::main})}">
+<head><title th:text="${isNew} ? 'New Product' : 'Edit Product'">Product</title></head>
+<body>
+<main>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1" th:text="${isNew} ? 'Add New Product' : 'Edit Product'">Product</h2>
+            <p class="text-fc-muted small mb-0">
+                <a th:href="@{/admin/products}"><i class="bi bi-arrow-left me-1"></i>Back to Products</a>
+            </p>
+        </div>
+    </div>
+
+    <form th:action="@{/admin/products/save}" th:object="${product}"
+          method="post" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{id}"/>
+
+        <div class="row g-4">
+
+            <!-- ===== LEFT: Main Details ===== -->
+            <div class="col-lg-8">
+                <div class="fc-form-card mb-4">
+                    <h5 class="mb-3"><i class="bi bi-info-circle me-2 text-fc-brown"></i>Product Details</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label">Product Name <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{name}" class="form-control"
+                               th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
+                               placeholder="e.g. Royal King Size Bed"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea th:field="*{description}" class="form-control" rows="4"
+                                  placeholder="Detailed description of the product..."></textarea>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Category <span class="text-danger">*</span></label>
+                            <select th:field="*{categoryId}" class="form-select"
+                                    th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'">
+                                <option value="">-- Select Category --</option>
+                                <option th:each="cat : ${categories}"
+                                        th:value="${cat.id}"
+                                        th:text="${cat.name}">Category</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Base Price (₹) <span class="text-danger">*</span></label>
+                            <input type="number" th:field="*{basePrice}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('basePrice')} ? 'is-invalid'"
+                                   placeholder="e.g. 18000" min="0" step="0.01"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('basePrice')}" th:errors="*{basePrice}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Stock Status</label>
+                            <select th:field="*{stockStatus}" class="form-select">
+                                <option th:each="s : ${stockStatuses}"
+                                        th:value="${s.name()}"
+                                        th:text="${s.displayName}">Status</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end gap-4">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" th:field="*{customSizeAllowed}" id="customSize"/>
+                                <label class="form-check-label" for="customSize">Custom Size Available</label>
+                            </div>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" th:field="*{active}" id="activeStatus"/>
+                                <label class="form-check-label" for="activeStatus">Active</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wood Type Pricing -->
+                <div class="fc-form-card">
+                    <h5 class="mb-3"><i class="bi bi-tree me-2 text-fc-brown"></i>Wood Type Pricing</h5>
+                    <p class="text-fc-muted small mb-3">
+                        Set price adjustment for each wood type. Leave "Override" blank to use Base Price + Adjustment.
+                    </p>
+                    <div class="table-responsive">
+                        <table class="table table-sm" style="font-size:0.9rem;">
+                            <thead>
+                                <tr>
+                                    <th>Wood Type</th>
+                                    <th>Price Adjustment (₹)</th>
+                                    <th>Override Final Price (₹)</th>
+                                    <th>Include</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="wood, stat : ${woodTypes}">
+                                    <td class="fw-600" th:text="${wood.name}">Wood</td>
+                                    <td>
+                                        <input type="hidden" th:name="'woodTypeIds[' + ${stat.index} + ']'"
+                                               th:value="${wood.id}"/>
+                                        <input type="number"
+                                               th:name="'priceAdjustments[' + ${stat.index} + ']'"
+                                               class="form-control form-control-sm"
+                                               placeholder="e.g. 500"
+                                               th:value="${existingWoodPrices != null and existingWoodPrices[wood.id] != null ? existingWoodPrices[wood.id].priceAdjustment : 0}"
+                                               step="0.01"/>
+                                    </td>
+                                    <td>
+                                        <input type="number"
+                                               th:name="'finalPriceOverrides[' + ${stat.index} + ']'"
+                                               class="form-control form-control-sm"
+                                               placeholder="Optional"
+                                               th:value="${existingWoodPrices != null and existingWoodPrices[wood.id] != null ? existingWoodPrices[wood.id].finalPriceOverride : ''}"
+                                               step="0.01"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== RIGHT: Images ===== -->
+            <div class="col-lg-4">
+                <div class="fc-form-card mb-3">
+                    <h5 class="mb-3"><i class="bi bi-images me-2 text-fc-brown"></i>Primary Image</h5>
+
+                    <!-- Show existing primary image -->
+                    <div th:if="${not #lists.isEmpty(existingImages)}" class="mb-3">
+                        <div th:each="img : ${existingImages}" th:if="${img.primaryImage}">
+                            <img th:src="@{${img.imagePath}}"
+                                 style="width:100%;border-radius:10px;object-fit:cover;max-height:200px;"/>
+                            <small class="text-fc-muted d-block mt-1">Current primary image</small>
+                        </div>
+                    </div>
+
+                    <label class="form-label">
+                        <span th:text="${not #lists.isEmpty(existingImages)} ? 'Replace Primary Image' : 'Upload Primary Image'">Upload</span>
+                    </label>
+                    <input type="file" id="primaryImageInput" name="primaryImageFile"
+                           class="form-control" accept="image/jpeg,image/png,image/webp"/>
+                    <div id="primaryPreview" class="mt-2 d-flex flex-wrap gap-2"></div>
+                    <small class="text-fc-muted">JPEG, PNG or WebP. Max 10MB.</small>
+                </div>
+
+                <div class="fc-form-card">
+                    <h5 class="mb-3"><i class="bi bi-grid-3x3 me-2 text-fc-brown"></i>Additional Images</h5>
+
+                    <!-- Show existing additional images -->
+                    <div th:if="${not #lists.isEmpty(existingImages)}" class="mb-3 d-flex flex-wrap gap-2">
+                        <div th:each="img : ${existingImages}" th:unless="${img.primaryImage}">
+                            <img th:src="@{${img.imagePath}}"
+                                 style="width:70px;height:70px;object-fit:cover;border-radius:8px;border:1px solid var(--fc-border);"/>
+                        </div>
+                    </div>
+
+                    <input type="file" id="additionalImagesInput" name="additionalImageFiles"
+                           class="form-control" accept="image/jpeg,image/png,image/webp" multiple/>
+                    <div id="additionalPreview" class="mt-2 d-flex flex-wrap gap-2"></div>
+                    <small class="text-fc-muted">Select multiple images (Ctrl+Click). Max 10MB each.</small>
+                </div>
+
+                <!-- Save Button -->
+                <div class="d-grid gap-2 mt-3">
+                    <button type="submit" class="btn-fc-primary btn py-2">
+                        <i class="bi bi-check-lg me-2"></i>
+                        <span th:text="${isNew} ? 'Create Product' : 'Update Product'">Save</span>
+                    </button>
+                    <a th:href="@{/admin/products}" class="btn-fc-outline btn py-2">Cancel</a>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</main>
+</body>
+</html>

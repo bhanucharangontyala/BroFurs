@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layouts/main :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>Home</title>
+</head>
+<body>
+<main>
+
+<section class="hero-section">
+    <div class="container py-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7 hero-content">
+                <span class="hero-badge"><i class="bi bi-award me-1"></i>Family Crafted Since 1980</span>
+                <h1>Furniture Built With<br/>Heart and Hardwood</h1>
+                <p class="lead">
+                    Explore handcrafted wooden furniture for modern homes, from statement beds to custom cupboards and doors built for decades of use.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a th:href="@{/products}" class="btn-fc-primary btn">
+                        <i class="bi bi-grid me-2"></i>Browse Products
+                    </a>
+                    <a th:href="@{/register}" class="btn-fc-light btn" sec:authorize="!isAuthenticated()">Get Started</a>
+                    <a th:href="@{/user/dashboard}" class="btn-fc-light btn" sec:authorize="isAuthenticated()">
+                        <i class="bi bi-person-circle me-1"></i>My Dashboard
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">500+</span>
+                        <small>Projects Delivered</small>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">4+</span>
+                        <small>Wood Options</small>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">100%</span>
+                        <small>Custom Sizing</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-flex justify-content-center align-items-center">
+                <div class="hero-visual">
+                    <i class="bi bi-lamp-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-fc-cream">
+    <div class="container">
+        <div class="section-heading">
+            <h2>Shop by Category</h2>
+            <p>Find the right fit for each room with curated categories designed around real home needs.</p>
+            <div class="section-divider"></div>
+        </div>
+        <div class="row g-3 justify-content-center">
+            <div th:each="cat : ${categories}" class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <a th:href="@{/products(categoryId=${cat.id})}" class="text-decoration-none">
+                    <div class="category-card">
+                        <span class="category-icon"><i class="bi bi-grid-1x2-fill"></i></span>
+                        <h5 th:text="${cat.name}">Category</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 section-soft">
+    <div class="container">
+        <div class="section-heading">
+            <h2>Featured Products</h2>
+            <p>Handpicked pieces from our workshop, ready to be tailored in the wood and finish you prefer.</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(featuredProducts)}" class="text-center py-5">
+            <i class="bi bi-inbox fs-1 text-fc-muted"></i>
+            <p class="text-fc-muted mt-3">No products available yet. Check back soon.</p>
+        </div>
+
+        <div class="row g-4" th:unless="${#lists.isEmpty(featuredProducts)}">
+            <div class="col-sm-6 col-lg-3" th:each="product : ${featuredProducts}">
+                <div class="product-card">
+                    <div class="product-card-img-wrapper">
+                        <img th:if="${product.primaryImage != null}"
+                             th:src="@{${product.primaryImage.imagePath}}"
+                             th:alt="${product.name}"/>
+                        <div th:unless="${product.primaryImage != null}" class="product-card-placeholder">
+                            <i class="bi bi-image"></i>
+                        </div>
+                    </div>
+                    <div class="product-card-body">
+                        <div class="product-card-category" th:text="${product.category.name}">Category</div>
+                        <h5 class="product-card-title" th:text="${product.name}">Product Name</h5>
+                        <div class="product-card-price">
+                            <span class="currency">Rs.</span>
+                            <span th:text="${#numbers.formatDecimal(product.basePrice, 0, 'COMMA', 0, 'POINT')}">0</span>
+                            <small>starting price</small>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge rounded-pill"
+                                  th:classappend="${product.stockStatus.name() == 'IN_STOCK'} ? 'badge-in-stock' :
+                                                  (${product.stockStatus.name() == 'OUT_OF_STOCK'} ? 'badge-out-of-stock' : 'badge-made-to-order')"
+                                  th:text="${product.stockStatus.displayName}">Stock</span>
+                            <a th:href="@{/products/{slug}(slug=${product.slug})}" class="btn btn-sm btn-fc-outline">
+                                View Details <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <a th:href="@{/products}" class="btn-fc-primary btn px-5">
+                View All Products <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-fc-cream">
+    <div class="container">
+        <div class="section-heading">
+            <h2>Why Choose BroFurs</h2>
+            <div class="section-divider"></div>
+        </div>
+        <div class="row g-4 text-center">
+            <div class="col-sm-6 col-lg-3">
+                <div class="category-card">
+                    <div class="home-feature-icon"><i class="bi bi-tree-fill"></i></div>
+                    <h5>Premium Wood</h5>
+                    <p class="text-fc-muted small mb-0">Choose from durable woods sourced for strength, texture, and finish quality.</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="category-card">
+                    <div class="home-feature-icon"><i class="bi bi-rulers"></i></div>
+                    <h5>Custom Sizing</h5>
+                    <p class="text-fc-muted small mb-0">Each piece can be built to your exact room dimensions and daily use.</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="category-card">
+                    <div class="home-feature-icon"><i class="bi bi-house-check-fill"></i></div>
+                    <h5>Site Visits</h5>
+                    <p class="text-fc-muted small mb-0">Book a visit and get guidance on measurements, placement, and finish selection.</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="category-card">
+                    <div class="home-feature-icon"><i class="bi bi-shield-check"></i></div>
+                    <h5>Trusted Quality</h5>
+                    <p class="text-fc-muted small mb-0">Our work is built for long-term use with a focus on structure, polish, and reliability.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 cta-section">
+    <div class="container text-center py-3">
+        <h2 class="cta-title">Ready to Furnish Your Dream Home?</h2>
+        <p class="cta-copy">
+            Talk to our team, compare styles, and place a custom order that fits your space without compromise.
+        </p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a th:href="@{/products}" class="btn-fc-light btn px-4">
+                <i class="bi bi-grid me-2"></i>Browse Products
+            </a>
+            <a href="tel:+919876543210" class="btn btn-fc-outline cta-outline-light px-4">
+                <i class="bi bi-telephone me-2"></i>Call Us
+            </a>
+        </div>
+    </div>
+</section>
+
+</main>
+</body>
+</html>

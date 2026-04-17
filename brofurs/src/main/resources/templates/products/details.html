@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layouts/main :: layout(~{::title}, ~{::main})}">
+<head><title th:text="${product.name}">Product</title></head>
+<body>
+<main>
+
+<div class="page-banner">
+    <div class="container">
+        <h1 th:text="${product.name}">Product Name</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/products}">Products</a></li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/products(categoryId=${product.category.id})}"
+                       th:text="${product.category.name}">Category</a>
+                </li>
+                <li class="breadcrumb-item active" th:text="${product.name}">Product</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+
+
+<section class="py-4 page-surface">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-5">
+                <div class="product-detail-gallery">
+                    <div class="gallery-main">
+                        <img id="galleryMainImg"
+                             th:if="${product.primaryImage != null}"
+                             th:src="@{${product.primaryImage.imagePath}}"
+                             th:alt="${product.name}"/>
+                        <div th:unless="${product.primaryImage != null}" class="gallery-placeholder">
+                            <i class="bi bi-image"></i>
+                        </div>
+                    </div>
+                    <div class="gallery-thumbs" th:if="${not #lists.isEmpty(product.images)}">
+                        <div class="gallery-thumb"
+                             th:each="img, stat : ${product.images}"
+                             th:classappend="${img.primaryImage} ? 'active'"
+                             th:data-src="@{${img.imagePath}}"
+                             th:onclick="|document.getElementById('galleryMainImg').src='@{${img.imagePath}}';document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.remove('active'));this.classList.add('active')|">
+                            <img th:src="@{${img.imagePath}}" th:alt="${product.name}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                    <span class="badge product-meta-badge" th:text="${product.category.name}">Category</span>
+                    <span class="badge rounded-pill"
+                          th:classappend="${product.stockStatus.name() == 'IN_STOCK'} ? 'badge-in-stock' :
+                                          (${product.stockStatus.name() == 'OUT_OF_STOCK'} ? 'badge-out-of-stock' : 'badge-made-to-order')"
+                          th:text="${product.stockStatus.displayName}">Stock</span>
+                    <span th:if="${product.customSizeAllowed}" class="badge product-custom-badge">
+                        <i class="bi bi-arrows-angle-expand me-1"></i>Custom Size Available
+                    </span>
+                </div>
+
+                <h1 class="product-title" th:text="${product.name}">Product Name</h1>
+
+                <span id="basePriceData" th:data-price="${product.basePrice}" class="d-none"></span>
+
+                <div class="my-3">
+                    <div class="text-fc-muted small mb-1">Starting from</div>
+                    <div class="product-price-display" id="currentPrice">
+                        <span class="currency">Rs.</span>
+                        <span th:text="${#numbers.formatDecimal(product.basePrice, 0, 'COMMA', 0, 'POINT')}">0</span>
+                    </div>
+                    <div class="text-fc-muted small">Price varies by wood type</div>
+                </div>
+
+                <p th:if="${product.description != null}"
+                   th:text="${product.description}"
+                   class="product-description"></p>
+
+                <div th:if="${not #lists.isEmpty(woodPrices)}" class="mb-4">
+                    <h6 class="fw-600 mb-2">Select Wood Type</h6>
+                    <div class="wood-type-selector d-flex flex-wrap gap-2">
+                        <div th:each="wp, stat : ${woodPrices}" class="form-check p-0">
+                            <input class="form-check-input" type="radio"
+                                   name="woodTypeId"
+                                   th:id="|woodType_${wp.woodType.id}|"
+                                   th:value="${wp.woodType.id}"
+                                   th:checked="${stat.first}"/>
+                            <label class="form-check-label"
+                                   th:for="|woodType_${wp.woodType.id}|">
+                                <i class="bi bi-tree me-1"></i>
+                                <span th:text="${wp.woodType.name}">Wood</span>
+                                <small class="ms-1 opacity-75"
+                                       th:if="${wp.priceAdjustment.compareTo(T(java.math.BigDecimal).ZERO) > 0}"
+                                       th:text="|+Rs. ${#numbers.formatDecimal(wp.priceAdjustment, 0, 'COMMA', 0, 'POINT')}|"></small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div sec:authorize="!isAuthenticated()" class="alert-fc-info d-flex gap-2 align-items-center mb-3">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>Please <a th:href="@{/login}" class="fw-600">login</a> or
+                    <a th:href="@{/register}" class="fw-600">register</a> to place an order.</span>
+                </div>
+
+                <div sec:authorize="isAuthenticated()" class="d-flex flex-wrap gap-3 mb-2">
+                    <button class="btn-fc-primary btn px-4" data-bs-toggle="collapse"
+                            data-bs-target="#orderFormSection">
+                        <i class="bi bi-bag-plus me-2"></i>Place Order
+                    </button>
+                    <button class="btn-fc-outline btn px-4" data-bs-toggle="collapse"
+                            data-bs-target="#appointmentFormSection">
+                        <i class="bi bi-calendar-plus me-2"></i>Book Site Visit
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="collapse mt-4" id="orderFormSection" sec:authorize="isAuthenticated()">
+            <div class="fc-form-card">
+                <h4 class="mb-4"><i class="bi bi-bag-plus me-2 text-fc-brown"></i>Place Your Order</h4>
+                <form th:action="@{/order/place}" method="post">
+                    <input type="hidden" name="productId" th:value="${product.id}"/>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Selected Wood Type</label>
+                            <select name="woodTypeId" class="form-select">
+                                <option value="">Select Wood Type</option>
+                                <option th:each="wp : ${woodPrices}"
+                                        th:value="${wp.woodType.id}"
+                                        th:text="${wp.woodType.name}">Wood</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Quantity</label>
+                            <div class="input-group">
+                                <button type="button" class="btn btn-outline-secondary" id="qtyMinus">-</button>
+                                <input type="number" name="quantity" id="qtyInput"
+                                       class="form-control text-center" value="1" min="1" max="99"/>
+                                <button type="button" class="btn btn-outline-secondary" id="qtyPlus">+</button>
+                            </div>
+                        </div>
+
+                        <div id="customSizeSection" th:if="${product.customSizeAllowed}" class="col-12">
+                            <div class="custom-dimensions-box">
+                                <h6 class="mb-3">
+                                    <i class="bi bi-arrows-angle-expand me-2 text-fc-brown"></i>Custom Dimensions
+                                    <small class="text-fc-muted fw-400">(optional)</small>
+                                </h6>
+                                <div class="row g-2">
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small">Length</label>
+                                        <input type="number" name="customLength" class="form-control"
+                                               placeholder="e.g. 200" step="0.1" min="0"/>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small">Width</label>
+                                        <input type="number" name="customWidth" class="form-control"
+                                               placeholder="e.g. 150" step="0.1" min="0"/>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small">Height</label>
+                                        <input type="number" name="customHeight" class="form-control"
+                                               placeholder="e.g. 90" step="0.1" min="0"/>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small">Unit</label>
+                                        <select name="sizeUnit" class="form-select">
+                                            <option value="cm">cm</option>
+                                            <option value="inch">inch</option>
+                                            <option value="feet">feet</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Your Name <span class="text-danger">*</span></label>
+                            <input type="text" name="customerName" class="form-control"
+                                   th:value="${currentUser?.fullName}" required/>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" name="customerPhone" class="form-control"
+                                   th:value="${currentUser?.phone}" placeholder="Your contact number"/>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Delivery Address</label>
+                            <textarea name="deliveryAddress" class="form-control" rows="2"
+                                      th:text="${currentUser?.address}"
+                                      placeholder="Full delivery address"></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Customization Notes <small class="text-fc-muted">(optional)</small></label>
+                            <textarea name="notes" class="form-control" rows="2"
+                                      placeholder="Any special requirements, finish preferences, or timeline notes"></textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn-fc-primary btn px-5">
+                                <i class="bi bi-check-circle me-2"></i>Confirm Order
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="collapse mt-4" id="appointmentFormSection" sec:authorize="isAuthenticated()">
+            <div class="fc-form-card">
+                <h4 class="mb-4"><i class="bi bi-calendar-check me-2 text-fc-brown"></i>Book a Site Visit</h4>
+                <form th:action="@{/appointment/book}" method="post">
+                    <input type="hidden" name="productId" th:value="${product.id}"/>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Preferred Date <span class="text-danger">*</span></label>
+                            <input type="date" name="preferredDate" class="form-control" required
+                                   th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Preferred Time</label>
+                            <input type="time" name="preferredTime" class="form-control"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Your Name <span class="text-danger">*</span></label>
+                            <input type="text" name="customerName" class="form-control"
+                                   th:value="${currentUser?.fullName}" required/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" name="phone" class="form-control"
+                                   th:value="${currentUser?.phone}"/>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Your Address</label>
+                            <textarea name="address" class="form-control" rows="2"
+                                      th:text="${currentUser?.address}"
+                                      placeholder="Address where you want the visit"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Message <small class="text-fc-muted">(optional)</small></label>
+                            <textarea name="message" class="form-control" rows="2"
+                                      placeholder="Any specific product or requirement you would like to discuss"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn-fc-outline btn px-5">
+                                <i class="bi bi-calendar-check me-2"></i>Request Appointment
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<script th:inline="javascript">
+    window.WOOD_PRICE_MAP = {};
+
+    /*[# th:each="wp : ${woodPrices}"]*/
+    window.WOOD_PRICE_MAP[${wp.woodType.id}] = {
+        adjustment: [[${wp.priceAdjustment}]],
+        override: [[${wp.finalPriceOverride}]]
+    };
+    /*[/]*/
+</script>
+</main>
+</body>
+</html>

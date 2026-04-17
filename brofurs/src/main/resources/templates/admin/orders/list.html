@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/admin :: adminLayout(~{::title}, ~{::main})}">
+<head><title>Orders</title></head>
+<body>
+<main>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Orders</h2>
+            <p class="text-fc-muted small mb-0">View and manage all customer orders</p>
+        </div>
+    </div>
+
+    <div class="admin-table-card">
+        <div class="admin-table-header">
+            <h5><i class="bi bi-bag-check me-2"></i>All Orders</h5>
+            <span class="badge" style="background:var(--fc-sand);color:var(--fc-brown-dark);"
+                  th:text="${#lists.size(orders)} + ' orders'">0</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table admin-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Product</th>
+                        <th>Wood Type</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(orders)}">
+                        <td colspan="9" class="text-center text-fc-muted py-4">No orders yet.</td>
+                    </tr>
+                    <tr th:each="order : ${orders}">
+                        <td><strong th:text="${order.orderNumber}">FC-001</strong></td>
+                        <td th:text="${order.customerName}">Name</td>
+                        <td th:text="${order.customerPhone ?: '—'}">Phone</td>
+                        <td>
+                            <span th:each="item, stat : ${order.orderItems}">
+                                <span th:text="${#strings.abbreviate(item.productNameSnapshot, 22)}"></span>
+                                <span th:unless="${stat.last}">, </span>
+                            </span>
+                        </td>
+                        <td>
+                            <span th:each="item, stat : ${order.orderItems}">
+                                <span th:if="${item.selectedWoodType != null}"
+                                      th:text="${item.selectedWoodType.name}">Wood</span>
+                                <span th:unless="${item.selectedWoodType != null}" class="text-fc-muted">—</span>
+                            </span>
+                        </td>
+                        <td class="fw-600 text-fc-brown">
+                            ₹<span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}">0</span>
+                        </td>
+                        <td th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy')}">Date</td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="|status-${order.status.name()}|"
+                                  th:text="${order.status.displayName}">Status</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/orders/{id}(id=${order.id})}"
+                               class="btn btn-sm btn-fc-outline">
+                                <i class="bi bi-eye me-1"></i>View
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

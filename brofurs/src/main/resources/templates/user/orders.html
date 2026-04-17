@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/main :: layout(~{::title}, ~{::main})}">
+<head><title>My Orders</title></head>
+<body>
+<main>
+
+<div class="page-banner">
+    <div class="container">
+        <h1><i class="bi bi-bag-check me-2"></i>My Orders</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/user/dashboard}">Dashboard</a></li>
+                <li class="breadcrumb-item active">My Orders</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-4 page-surface">
+    <div class="container">
+        <div th:if="${#lists.isEmpty(orders)}" class="text-center py-5">
+            <i class="bi bi-bag fs-1 text-fc-muted"></i>
+            <h5 class="mt-3">No orders yet</h5>
+            <p class="text-fc-muted">Browse our products and place your first order.</p>
+            <a th:href="@{/products}" class="btn-fc-primary btn mt-2">Browse Products</a>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(orders)}" class="admin-table-card">
+            <div class="admin-table-header">
+                <h5><i class="bi bi-list-ul me-2"></i>Order History</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table admin-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Product</th>
+                            <th>Wood Type</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td><strong th:text="${order.orderNumber}">FC-001</strong></td>
+                            <td>
+                                <span th:each="item, stat : ${order.orderItems}">
+                                    <span th:text="${item.productNameSnapshot}">Product</span>
+                                    <span th:if="${item.quantity > 1}" class="text-fc-muted small"
+                                          th:text="|x ${item.quantity}|"></span>
+                                    <span th:if="${!stat.last}">, </span>
+                                </span>
+                            </td>
+                            <td>
+                                <span th:each="item, stat : ${order.orderItems}">
+                                    <span th:if="${item.selectedWoodType != null}"
+                                          th:text="${item.selectedWoodType.name}">Wood</span>
+                                    <span th:unless="${item.selectedWoodType != null}" class="text-fc-muted">-</span>
+                                    <span th:if="${!stat.last}">, </span>
+                                </span>
+                            </td>
+                            <td class="fw-600 text-fc-brown">
+                                <span class="currency">Rs.</span>
+                                <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}">0</span>
+                            </td>
+                            <td th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy')}">Date</td>
+                            <td>
+                                <span class="status-badge"
+                                      th:classappend="|status-${order.status.name()}|"
+                                      th:text="${order.status.displayName}">Status</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
+</body>
+</html>

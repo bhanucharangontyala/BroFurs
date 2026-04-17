@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="footer" class="footer-fc">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="footer-brand mb-2">
+                    <i class="bi bi-house-heart-fill me-1"></i>BroFurs
+                </div>
+                <p class="footer-description">
+                    Crafting quality wooden furniture for your home since 1980.
+                    Every piece is made with care, tradition, and the finest wood.
+                </p>
+                <div class="d-flex gap-3 mt-3">
+                    <a href="#" title="Facebook"><i class="bi bi-facebook fs-5"></i></a>
+                    <a href="#" title="Instagram"><i class="bi bi-instagram fs-5"></i></a>
+                    <a href="#" title="WhatsApp"><i class="bi bi-whatsapp fs-5"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-6">
+                <h5>Categories</h5>
+                <ul>
+                    <li><a th:href="@{/products(categoryId=1)}">Beds</a></li>
+                    <li><a th:href="@{/products(categoryId=2)}">Shelves</a></li>
+                    <li><a th:href="@{/products(categoryId=3)}">Windows</a></li>
+                    <li><a th:href="@{/products(categoryId=4)}">Doors</a></li>
+                    <li><a th:href="@{/products(categoryId=5)}">Cupboards</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <h5>Quick Links</h5>
+                <ul>
+                    <li><a th:href="@{/}">Home</a></li>
+                    <li><a th:href="@{/products}">All Products</a></li>
+                    <li><a th:href="@{/register}">Register</a></li>
+                    <li><a th:href="@{/login}">Login</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <h5>Contact Us</h5>
+                <ul>
+                    <li><i class="bi bi-geo-alt me-2"></i>1-4-111/4/A Oppo to Annapurna Super Market, Vasavi Colony,Banswada, Kamareddy, Telangana, India</li>
+                    <li><i class="bi bi-telephone me-2"></i>+91 8341676632</li>
+                    <li><i class="bi bi-envelope me-2"></i>info@brofurs.com</li>
+                    <li><i class="bi bi-clock me-2"></i>Mon-Sat: 9 AM - 7 PM</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-divider"></div>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <p class="footer-copy mb-1 mb-md-0">
+                &copy; <span th:text="${#dates.year(#dates.createNow())}">2026</span>
+                BroFurs. All rights reserved.
+            </p>
+            <p class="footer-copy">Crafted with <i class="bi bi-heart-fill text-danger"></i> in India</p>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

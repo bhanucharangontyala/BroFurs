@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/main :: layout(~{::title}, ~{::main})}">
+<head><title>My Appointments</title></head>
+<body>
+<main>
+
+<div class="page-banner">
+    <div class="container">
+        <h1><i class="bi bi-calendar-check me-2"></i>My Appointments</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/user/dashboard}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Appointments</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-4 page-surface">
+    <div class="container">
+        <div th:if="${#lists.isEmpty(appointments)}" class="text-center py-5">
+            <i class="bi bi-calendar fs-1 text-fc-muted"></i>
+            <h5 class="mt-3">No appointments yet</h5>
+            <p class="text-fc-muted">Book a site visit from any product page.</p>
+            <a th:href="@{/products}" class="btn-fc-primary btn mt-2">Browse Products</a>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(appointments)}" class="admin-table-card">
+            <div class="admin-table-header">
+                <h5><i class="bi bi-calendar-week me-2"></i>Appointment Requests</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table admin-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Product</th>
+                            <th>Preferred Date</th>
+                            <th>Preferred Time</th>
+                            <th>Requested On</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="appt, stat : ${appointments}">
+                            <td th:text="${stat.count}">1</td>
+                            <td>
+                                <span th:if="${appt.product != null}" th:text="${appt.product.name}">Product</span>
+                                <span th:unless="${appt.product != null}" class="text-fc-muted">General Visit</span>
+                            </td>
+                            <td th:text="${appt.preferredDate != null ? #temporals.format(appt.preferredDate, 'dd MMM yyyy') : '-'}">Date</td>
+                            <td th:text="${appt.preferredTime != null ? #temporals.format(appt.preferredTime, 'hh:mm a') : '-'}">Time</td>
+                            <td th:text="${#temporals.format(appt.createdAt, 'dd MMM yyyy')}">Date</td>
+                            <td>
+                                <span class="status-badge"
+                                      th:classappend="|status-${appt.status.name()}|"
+                                      th:text="${appt.status.displayName}">Status</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
+</body>
+</html>

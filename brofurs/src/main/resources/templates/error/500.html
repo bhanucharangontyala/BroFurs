@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/main :: layout(~{::title}, ~{::main})}">
+<head><title>Server Error</title></head>
+<body>
+<main>
+<section class="error-page">
+    <div class="container text-center py-5">
+        <div class="error-icon"><i class="bi bi-exclamation-triangle"></i></div>
+        <h1 class="error-code">500</h1>
+        <h2 class="mb-3">Something Went Wrong</h2>
+        <p class="text-fc-muted mb-4 error-copy error-copy-wide">
+            Our server encountered an unexpected error. Please try again in a moment or return to the previous page.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a th:href="@{/}" class="btn-fc-primary btn px-4">
+                <i class="bi bi-house me-2"></i>Go Home
+            </a>
+            <button onclick="history.back()" class="btn-fc-outline btn px-4">
+                <i class="bi bi-arrow-left me-2"></i>Go Back
+            </button>
+        </div>
+    </div>
+</section>
+</main>
+</body>
+</html>

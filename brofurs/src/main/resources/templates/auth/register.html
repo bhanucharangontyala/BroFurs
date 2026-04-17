@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/main :: layout(~{::title}, ~{::main})}">
+<head><title>Register</title></head>
+<body>
+<main>
+
+<section class="py-5 bg-fc-cream auth-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-7 col-lg-6">
+                <div class="text-center mb-4">
+                    <div class="auth-hero-icon"><i class="bi bi-person-plus-fill"></i></div>
+                    <h2 class="mt-2">Create Your Account</h2>
+                    <p class="text-fc-muted small">Join Brofurs to place orders, save your details, and book site visits.</p>
+                </div>
+
+                <div class="fc-form-card">
+                    <form th:action="@{/register}" th:object="${userDto}" method="post" novalidate>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{fullName}"
+                                       class="form-control"
+                                       th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'"
+                                       placeholder="Your full name" autofocus/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}"
+                                     th:errors="*{fullName}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" th:field="*{email}"
+                                       class="form-control"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                                       placeholder="you@email.com"/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}"
+                                     th:errors="*{email}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <input type="tel" th:field="*{phone}"
+                                       class="form-control"
+                                       th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'"
+                                       placeholder="10-digit mobile number"/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}"
+                                     th:errors="*{phone}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Password <span class="text-danger">*</span></label>
+                                <input type="password" th:field="*{password}"
+                                       class="form-control"
+                                       th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
+                                       placeholder="Minimum 6 characters"/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}"
+                                     th:errors="*{password}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                <input type="password" th:field="*{confirmPassword}"
+                                       class="form-control"
+                                       th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid'"
+                                       placeholder="Re-enter password"/>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}"
+                                     th:errors="*{confirmPassword}"></div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Address <span class="text-fc-muted small">(optional)</span></label>
+                                <textarea th:field="*{address}"
+                                          class="form-control" rows="2"
+                                          placeholder="Your delivery address"></textarea>
+                            </div>
+
+                            <div class="col-12 mt-2">
+                                <button type="submit" class="btn-fc-primary btn w-100 py-2">
+                                    <i class="bi bi-person-plus me-2"></i>Create Account
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <hr class="my-4 auth-divider"/>
+                    <p class="text-center text-fc-muted small mb-0">
+                        Already have an account?
+                        <a th:href="@{/login}" class="text-fc-brown fw-600">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
+</body>
+</html>
