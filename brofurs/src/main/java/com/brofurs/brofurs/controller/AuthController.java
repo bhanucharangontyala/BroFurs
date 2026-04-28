@@ -51,7 +51,6 @@ public class AuthController {
                            BindingResult result,
                            RedirectAttributes attrs) {
 
-        // Return to form if JSR-303 validation failed
         if (result.hasErrors()) {
             return "auth/register";
         }

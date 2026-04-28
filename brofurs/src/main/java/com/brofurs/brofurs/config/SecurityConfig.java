@@ -38,7 +38,6 @@ public class SecurityConfig {
         http
         .authenticationProvider(authenticationProvider()) 
             .authorizeHttpRequests(auth -> auth
-
                 // Public access
                 .requestMatchers(
                         "/", "/home", "/products", "/products/**", "/product/**",
